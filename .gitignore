@@ -8,3 +8,4 @@ Thumbs.db
 .env
 .env.local
 api/secrets.local.php
+api/secret.local.php

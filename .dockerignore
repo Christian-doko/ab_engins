@@ -1,0 +1,6 @@
+.git
+*.iso
+.env
+.env.local
+api/secrets.local.php
+README.md
