@@ -1,13 +1,15 @@
-# Image PHP + Apache pour Railway
-FROM php:8.3-apache
+# Image PHP pour Railway — serveur web intégré de PHP (sans Apache).
+# L'image php:8.3-apache produit "More than one MPM loaded" sur Railway ;
+# le serveur intégré élimine ce problème et suffit pour cette application.
+FROM php:8.3-cli
 
-# Extension PDO MySQL requise par api/config.php
 RUN docker-php-ext-install pdo_mysql
 
-# Copie du code dans la racine web d'Apache
-COPY . /var/www/html/
+WORKDIR /app
+COPY . /app
 
-# Apache écoute sur 80 ; côté Railway, cibler le port 80 lors de la
-# génération du domaine public (Settings → Networking).
-EXPOSE 80
-CMD ["apache2-foreground"]
+# Plusieurs workers pour absorber les requêtes simultanées (fetch parallèles du front)
+ENV PHP_CLI_SERVER_WORKERS=8
+
+EXPOSE 8080
+CMD ["sh", "-c", "exec php -S 0.0.0.0:${PORT:-8080} -t /app"]

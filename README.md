@@ -44,10 +44,12 @@ Configuration de la clé API ([console Anthropic](https://platform.claude.com)) 
    - `DB_USER` = `${{MySQL.MYSQLUSER}}`
    - `DB_PASS` = `${{MySQL.MYSQLPASSWORD}}`
 5. Importer les scripts `sql/` dans la base Railway (via l'onglet Data ou `mysql` en ligne de commande).
-6. Générer un domaine public : **Settings → Networking → Generate Domain**, en ciblant le **port 80**.
+6. Générer un domaine public : **Settings → Networking → Generate Domain** (accepter le port
+   détecté automatiquement, ou saisir **8080**).
 
-> Le fichier `railway.json` force Railway à construire avec le `Dockerfile` (le builder
-> auto-détecté « Railpack » provoque une erreur Apache *More than one MPM loaded*).
+> Le fichier `railway.json` force Railway à construire avec le `Dockerfile`. L'application est
+> servie par le serveur web intégré de PHP : l'image `php:8.3-apache` provoquait une erreur
+> *More than one MPM loaded* au démarrage du conteneur.
 
 > **Note Vercel** : Vercel n'exécute pas PHP nativement. Railway héberge ici l'application complète (pages + API + MySQL). Vercel ne devient utile que si le frontend est un jour séparé en application statique/React.
 "# ab_engins" 
