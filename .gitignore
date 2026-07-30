@@ -1,0 +1,9 @@
+# Fichiers locaux / artefacts
+*.iso
+*.log
+.DS_Store
+Thumbs.db
+
+# Secrets locaux
+.env
+.env.local

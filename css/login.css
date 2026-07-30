@@ -1,0 +1,105 @@
+/* ============================================================
+   AB ENGINS SARL — Page de connexion
+   ============================================================ */
+.login-body {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--green-800);
+  padding: 20px;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 380px;
+  background: #fff;
+  border-radius: 18px;
+  padding: 36px 32px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, .3);
+  text-align: center;
+}
+
+.login-badge {
+  display: inline-grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--green-700);
+  color: #fff;
+  font-size: 18px;
+  font-weight: 800;
+  margin-bottom: 14px;
+}
+
+.login-card h1 {
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: .3px;
+}
+
+.login-sub {
+  font-size: 12.5px;
+  color: var(--muted);
+  margin-top: 4px;
+  margin-bottom: 26px;
+}
+
+#loginForm { text-align: left; display: flex; flex-direction: column; gap: 4px; }
+
+#loginForm label {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--green-700);
+  margin-top: 14px;
+  margin-bottom: 6px;
+}
+
+#loginForm input {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 11px 13px;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--ink);
+  transition: border-color .15s, box-shadow .15s;
+}
+#loginForm input:focus {
+  outline: none;
+  border-color: var(--green-500);
+  box-shadow: 0 0 0 3px rgba(34, 136, 63, .15);
+}
+
+.login-error {
+  background: #fde8e8;
+  color: var(--red);
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 9px 12px;
+  border-radius: 8px;
+  margin-top: 14px;
+}
+
+.btn-login {
+  margin-top: 22px;
+  width: 100%;
+  justify-content: center;
+  background: var(--green-600);
+  color: #fff;
+  padding: 13px;
+  font-size: 13.5px;
+  letter-spacing: .4px;
+}
+.btn-login:hover { background: var(--green-700); }
+.btn-login:disabled { opacity: .7; cursor: default; }
+
+.login-forgot {
+  display: block;
+  margin-top: 18px;
+  font-size: 12.5px;
+  color: var(--green-600);
+  text-decoration: none;
+  font-weight: 600;
+}
+.login-forgot:hover { text-decoration: underline; }
