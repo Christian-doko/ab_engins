@@ -32,3 +32,4 @@ Application web de gestion de location d'engins de chantier : clients, contrats,
 6. Générer un domaine public : **Settings → Networking → Generate Domain**.
 
 > **Note Vercel** : Vercel n'exécute pas PHP nativement. Railway héberge ici l'application complète (pages + API + MySQL). Vercel ne devient utile que si le frontend est un jour séparé en application statique/React.
+"# ab_engins" 
