@@ -17,6 +17,21 @@ Application web de gestion de location d'engins de chantier : clients, contrats,
    - `sql/seed_ab_engins.sql` puis `sql/seed_extra_contracts.sql` (données de démo)
 3. Ouvrir `http://localhost/AB%20ENGINS/login.php`.
 
+## Assistant IA
+
+La page **Assistant IA** (`assistant.php`) permet d'interroger les données en langage naturel
+(« Quels permis expirent ce mois-ci ? », « Quelles factures sont impayées ? »). Le backend
+(`api/agent.php`) appelle l'API Claude (Anthropic) avec des outils **en lecture seule** branchés
+sur la base : l'IA ne modifie jamais les données et l'accès exige une session connectée.
+
+Configuration de la clé API ([console Anthropic](https://platform.claude.com)) :
+
+- **En local (XAMPP)** : créer `api/secrets.local.php` (non versionné) contenant :
+  ```php
+  <?php return 'sk-ant-votre-cle';
+  ```
+- **Sur Railway** : ajouter la variable `ANTHROPIC_API_KEY` dans les Variables du service PHP.
+
 ## Déployer sur Railway
 
 1. Pousser ce dépôt sur GitHub.

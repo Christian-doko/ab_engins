@@ -7,3 +7,4 @@ Thumbs.db
 # Secrets locaux
 .env
 .env.local
+api/secrets.local.php

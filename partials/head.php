@@ -29,6 +29,7 @@ $navItems = [
     ['key' => 'engins',    'label' => 'Engins',          'href' => 'engins.php',      'icon' => 'engins'],
     ['key' => 'factures',  'label' => 'Facturation',     'href' => 'factures.php',    'icon' => 'factures'],
     ['key' => 'assist',    'label' => 'Assistance',      'href' => 'assistance.php',  'icon' => 'assist'],
+    ['key' => 'assistant', 'label' => 'Assistant IA',    'href' => 'assistant.php',   'icon' => 'assistant'],
 ];
 
 function svg_icon(string $key): string {
@@ -40,6 +41,7 @@ function svg_icon(string $key): string {
         'engins'    => '<svg viewBox="0 0 24 24"><path d="M3 17h13v-4l-3-4H3z"/><circle cx="6" cy="19" r="2"/><circle cx="14" cy="19" r="2"/><path d="M16 13h3l2 3v1h-5"/></svg>',
         'factures'  => '<svg viewBox="0 0 24 24"><path d="M6 2h12v20l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg>',
         'assist'    => '<svg viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4l-6 6 2 2 6-6a4 4 0 0 0 5.4-5.4l-2.3 2.3-2-2z"/></svg>',
+        'assistant' => '<svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/><path d="M8 12h.01M12 12h.01M16 12h.01"/></svg>',
     ];
     return $icons[$key] ?? '';
 }
