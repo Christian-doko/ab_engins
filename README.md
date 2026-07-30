@@ -17,20 +17,24 @@ Application web de gestion de location d'engins de chantier : clients, contrats,
    - `sql/seed_ab_engins.sql` puis `sql/seed_extra_contracts.sql` (données de démo)
 3. Ouvrir `http://localhost/AB%20ENGINS/login.php`.
 
-## Assistant IA
+## Assistant IA (moteur NLU maison)
 
 La page **Assistant IA** (`assistant.php`) permet d'interroger les données en langage naturel
-(« Quels permis expirent ce mois-ci ? », « Quelles factures sont impayées ? »). Le backend
-(`api/agent.php`) appelle l'API Claude (Anthropic) avec des outils **en lecture seule** branchés
-sur la base : l'IA ne modifie jamais les données et l'accès exige une session connectée.
+(« Quels permis expirent ce mois-ci ? », « Quelles factures sont impayées ? »).
 
-Configuration de la clé API ([console Anthropic](https://platform.claude.com)) :
+Le moteur est développé **entièrement en interne**, sans API externe ni dépendance :
 
-- **En local (XAMPP)** : créer `api/secrets.local.php` (non versionné) contenant :
-  ```php
-  <?php return 'sk-ant-votre-cle';
-  ```
-- **Sur Railway** : ajouter la variable `ANTHROPIC_API_KEY` dans les Variables du service PHP.
+```
+question → normalisation → tokenisation + racinisation → vectorisation TF-IDF
+        → similarité cosinus (intention) → extraction d'entités → requête SQL → réponse
+```
+
+- `api/moteur_ia.php` — le moteur NLU (normalisation, stemming français, TF-IDF,
+  similarité cosinus, extraction d'entités, gabarits de réponses) ;
+- `api/outils_donnees.php` — les 7 requêtes SQL en lecture seule ;
+- `api/agent.php` — l'endpoint de chat (session connectée requise).
+
+Architecture détaillée : voir [docs/moteur-ia.md](docs/moteur-ia.md).
 
 ## Déployer sur Railway
 
