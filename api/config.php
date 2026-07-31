@@ -6,15 +6,17 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 // Connexion PDO à la base ab_engins.
-// En local (XAMPP) : valeurs par défaut. En production (Railway) : variables d'environnement.
+// Priorité : variables d'environnement (Railway) > api/config.local.php (poste local,
+// non versionné, ex. port MySQL différent) > valeurs par défaut XAMPP.
 function db(): PDO {
     static $pdo = null;
     if ($pdo === null) {
-        $host = getenv('DB_HOST') ?: '127.0.0.1';
-        $port = getenv('DB_PORT') ?: '3306';
-        $name = getenv('DB_NAME') ?: 'ab_engins';
-        $user = getenv('DB_USER') ?: 'root';
-        $pass = getenv('DB_PASS') ?: '';
+        $local = is_file(__DIR__ . '/config.local.php') ? (array) (require __DIR__ . '/config.local.php') : [];
+        $host = getenv('DB_HOST') ?: ($local['host'] ?? '127.0.0.1');
+        $port = getenv('DB_PORT') ?: ($local['port'] ?? '3306');
+        $name = getenv('DB_NAME') ?: ($local['name'] ?? 'ab_engins');
+        $user = getenv('DB_USER') ?: ($local['user'] ?? 'root');
+        $pass = getenv('DB_PASS') ?: ($local['pass'] ?? '');
         $pdo = new PDO(
             "mysql:host={$host};port={$port};dbname={$name};charset=utf8mb4",
             $user,

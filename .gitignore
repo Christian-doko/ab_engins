@@ -9,3 +9,4 @@ Thumbs.db
 .env.local
 api/secrets.local.php
 api/secret.local.php
+api/config.local.php
