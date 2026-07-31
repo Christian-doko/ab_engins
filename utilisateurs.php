@@ -30,7 +30,7 @@ require __DIR__ . '/partials/head.php';
                 <tr>
                   <th>Identifiant</th>
                   <th>Rôle</th>
-                  <th>Employé lié</th>
+                  <th>Lié à</th>
                   <th>Dernière connexion</th>
                   <th>Statut</th>
                   <th>Actions</th>
@@ -57,18 +57,24 @@ require __DIR__ . '/partials/head.php';
                   <input type="text" name="identifiant" required autocomplete="off" />
                 </label>
                 <label>Rôle
-                  <select name="role">
+                  <select name="role" id="roleSelect">
                     <option value="agent">Agent</option>
                     <option value="technicien">Technicien</option>
                     <option value="admin">Administrateur</option>
+                    <option value="client">Client (espace client)</option>
                   </select>
                 </label>
                 <label>Mot de passe (8 caractères min.)
                   <input type="password" name="mot_de_passe" required autocomplete="new-password" />
                 </label>
-                <label>Employé lié (optionnel)
+                <label id="employeField">Employé lié (optionnel)
                   <select name="id_employe" id="employeSelect">
                     <option value="">— Aucun —</option>
+                  </select>
+                </label>
+                <label id="clientField" hidden>Client rattaché
+                  <select name="id_client" id="clientSelect">
+                    <option value="">— Choisir un client —</option>
                   </select>
                 </label>
               </div>

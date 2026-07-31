@@ -3,7 +3,7 @@
    ============================================================ */
 "use strict";
 
-const ROLE_LABEL = { admin: "Administrateur", agent: "Agent", technicien: "Technicien" };
+const ROLE_LABEL = { admin: "Administrateur", agent: "Agent", technicien: "Technicien", client: "Client" };
 let pwdUserId = null;
 
 function fmtDerniereConnexion(dt) {
@@ -20,6 +20,7 @@ async function loadUsers() {
     const data = await apiFetch("api/utilisateurs.php");
     renderUsers(data);
     renderEmployes(data.employes);
+    renderClients(data.clients);
   } catch (e) {
     errorBox.textContent = "Erreur : " + e.message;
     errorBox.hidden = false;
@@ -35,7 +36,7 @@ function renderUsers(data) {
       <tr>
         <td><strong>${u.identifiant}</strong>${isMe ? " <small>(vous)</small>" : ""}</td>
         <td>${ROLE_LABEL[u.role] || u.role}</td>
-        <td>${u.employe || "—"}</td>
+        <td>${u.liaison || "—"}</td>
         <td>${fmtDerniereConnexion(u.derniere_connexion)}</td>
         <td><span class="status ${u.actif ? "status-valide" : "status-expire"}">${u.actif ? "Actif" : "Désactivé"}</span></td>
         <td>
@@ -61,6 +62,14 @@ function renderEmployes(employes) {
   select.querySelectorAll("option:not(:first-child)").forEach((o) => o.remove());
   employes.forEach((e) => {
     select.appendChild(el(`<option value="${e.id_employe}">${e.nom} (${e.poste})</option>`));
+  });
+}
+
+function renderClients(clients) {
+  const select = $("#clientSelect");
+  select.querySelectorAll("option:not(:first-child)").forEach((o) => o.remove());
+  (clients || []).forEach((c) => {
+    select.appendChild(el(`<option value="${c.id_client}">${c.nom_client}</option>`));
   });
 }
 
@@ -94,7 +103,16 @@ document.addEventListener("DOMContentLoaded", () => {
   $("#openNewUser").addEventListener("click", () => {
     $("#userForm").reset();
     $("#userFormError").hidden = true;
+    $("#employeField").hidden = false;
+    $("#clientField").hidden = true;
     $("#userModalOverlay").hidden = false;
+  });
+
+  // Rôle client → on lie à un client ; sinon → à un employé (optionnel).
+  $("#roleSelect").addEventListener("change", () => {
+    const isClient = $("#roleSelect").value === "client";
+    $("#employeField").hidden = isClient;
+    $("#clientField").hidden = !isClient;
   });
   $("#closeNewUser").addEventListener("click", () => { $("#userModalOverlay").hidden = true; });
   $("#cancelNewUser").addEventListener("click", () => { $("#userModalOverlay").hidden = true; });
@@ -114,6 +132,7 @@ document.addEventListener("DOMContentLoaded", () => {
           mot_de_passe: f.mot_de_passe.value,
           role: f.role.value,
           id_employe: f.id_employe.value,
+          id_client: f.id_client.value,
         }),
       });
       $("#userModalOverlay").hidden = true;

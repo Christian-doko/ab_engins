@@ -8,3 +8,9 @@ if (empty($_SESSION['user'])) {
 }
 
 $currentUser = $_SESSION['user'];
+
+// Le rôle client n'accède jamais aux pages internes : il a son propre espace.
+if (($currentUser['role'] ?? '') === 'client') {
+    header('Location: espace-client.php');
+    exit;
+}

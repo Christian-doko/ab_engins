@@ -10,12 +10,16 @@ CREATE TABLE IF NOT EXISTS utilisateur (
   id_utilisateur     INT AUTO_INCREMENT PRIMARY KEY,
   identifiant        VARCHAR(50) NOT NULL UNIQUE,
   mot_de_passe_hash  VARCHAR(255) NOT NULL,
-  role               ENUM('admin','agent','technicien') NOT NULL DEFAULT 'agent',
+  role               ENUM('admin','agent','technicien','client') NOT NULL DEFAULT 'agent',
   actif              BOOLEAN NOT NULL DEFAULT TRUE,
   derniere_connexion DATETIME NULL,
   id_employe         INT NULL,
+  id_client          INT NULL,
   CONSTRAINT fk_utilisateur_employe
     FOREIGN KEY (id_employe) REFERENCES employe(id_employe)
+    ON UPDATE CASCADE ON DELETE SET NULL,
+  CONSTRAINT fk_utilisateur_client
+    FOREIGN KEY (id_client) REFERENCES client(id_client)
     ON UPDATE CASCADE ON DELETE SET NULL
 ) ENGINE=InnoDB;
 

@@ -65,3 +65,12 @@ function requireAuth(): array {
     }
     return $_SESSION['user'];
 }
+
+// Endpoints internes : accessibles au personnel uniquement, jamais au rôle client.
+function requireStaff(): array {
+    $user = requireAuth();
+    if (($user['role'] ?? '') === 'client') {
+        json_out(['error' => 'Accès réservé au personnel'], 403);
+    }
+    return $user;
+}

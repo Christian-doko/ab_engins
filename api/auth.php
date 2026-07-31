@@ -33,11 +33,19 @@ try {
             json_out(['error' => 'Identifiant et mot de passe requis'], 422);
         }
 
+        // La colonne id_client n'existe qu'après la migration espace client :
+        // on la lit prudemment pour rester compatible avec un schéma non migré.
+        $hasClientCol = (bool) $pdo->query("SHOW COLUMNS FROM utilisateur LIKE 'id_client'")->fetch();
+        $clientSelect = $hasClientCol ? 'u.id_client, cl.nom_client,' : 'NULL AS id_client, NULL AS nom_client,';
+        $clientJoin = $hasClientCol ? 'LEFT JOIN client cl ON cl.id_client = u.id_client' : '';
+
         $stmt = $pdo->prepare(
             "SELECT u.id_utilisateur, u.identifiant, u.mot_de_passe_hash, u.role, u.actif,
+                    {$clientSelect}
                     e.nom_employe, e.prenom_employe
              FROM utilisateur u
              LEFT JOIN employe e ON e.id_employe = u.id_employe
+             {$clientJoin}
              WHERE u.identifiant = :identifiant"
         );
         $stmt->execute(['identifiant' => $identifiant]);
@@ -51,7 +59,10 @@ try {
             'id' => (int) $row['id_utilisateur'],
             'identifiant' => $row['identifiant'],
             'role' => $row['role'],
-            'nom_complet' => trim(($row['prenom_employe'] ?? '') . ' ' . ($row['nom_employe'] ?? '')) ?: $row['identifiant'],
+            'id_client' => $row['id_client'] !== null ? (int) $row['id_client'] : null,
+            'nom_complet' => trim(($row['prenom_employe'] ?? '') . ' ' . ($row['nom_employe'] ?? ''))
+                ?: ($row['nom_client'] ?? '')
+                ?: $row['identifiant'],
         ];
 
         session_regenerate_id(true);

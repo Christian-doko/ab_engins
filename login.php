@@ -4,7 +4,7 @@ require_once __DIR__ . '/api/config.php';
 
 // Déjà connecté -> pas besoin de repasser par le formulaire.
 if (!empty($_SESSION['user'])) {
-    header('Location: index.php');
+    header('Location: ' . ($_SESSION['user']['role'] === 'client' ? 'espace-client.php' : 'index.php'));
     exit;
 }
 ?>
@@ -62,7 +62,7 @@ if (!empty($_SESSION['user'])) {
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Connexion impossible");
-        window.location.href = "index.php";
+        window.location.href = data.user && data.user.role === "client" ? "espace-client.php" : "index.php";
       } catch (err) {
         errorBox.textContent = err.message;
         errorBox.hidden = false;

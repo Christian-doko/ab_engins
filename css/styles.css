@@ -426,3 +426,19 @@ svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width:
    display:flex/grid des overlays écrasent le style navigateur [hidden] et
    les modales restent visibles en permanence. */
 [hidden] { display: none !important; }
+
+/* ============================================================
+   Espace client (portail)
+   ============================================================ */
+.portail-client { min-height: 100vh; display: flex; flex-direction: column; background: var(--bg); }
+.portail-topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--card); border-bottom: 1px solid var(--line);
+  padding: 12px 28px; box-shadow: var(--shadow-sm);
+}
+.portail-topbar .brand-text strong { color: var(--ink); }
+.portail-topbar .brand-text small { color: var(--muted); }
+.portail-content {
+  width: 100%; max-width: 1080px; margin: 0 auto; padding: 24px 20px 48px;
+  display: flex; flex-direction: column; gap: 18px;
+}

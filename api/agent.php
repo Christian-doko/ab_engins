@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 require __DIR__ . '/config.php';
-requireAuth();
+requireStaff();
 require __DIR__ . '/moteur_ia.php';
 
 /**
