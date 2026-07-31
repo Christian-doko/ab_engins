@@ -32,6 +32,11 @@ $navItems = [
     ['key' => 'assistant', 'label' => 'Assistant IA',    'href' => 'assistant.php',   'icon' => 'assistant'],
 ];
 
+// Gestion des comptes : réservée aux administrateurs.
+if (($currentUser['role'] ?? '') === 'admin') {
+    $navItems[] = ['key' => 'users', 'label' => 'Utilisateurs', 'href' => 'utilisateurs.php', 'icon' => 'users'];
+}
+
 function svg_icon(string $key): string {
     $icons = [
         'dashboard' => '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>',
@@ -42,6 +47,7 @@ function svg_icon(string $key): string {
         'factures'  => '<svg viewBox="0 0 24 24"><path d="M6 2h12v20l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg>',
         'assist'    => '<svg viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4l-6 6 2 2 6-6a4 4 0 0 0 5.4-5.4l-2.3 2.3-2-2z"/></svg>',
         'assistant' => '<svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/><path d="M8 12h.01M12 12h.01M16 12h.01"/></svg>',
+        'users'     => '<svg viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><path d="M2 21v-2a6 6 0 0 1 6-6h2a6 6 0 0 1 6 6v2"/><circle cx="18" cy="9" r="3"/><path d="M22 21v-1a4 4 0 0 0-3-3.87"/></svg>',
     ];
     return $icons[$key] ?? '';
 }

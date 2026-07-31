@@ -23,7 +23,10 @@ require __DIR__ . '/partials/head.php';
           <div class="card">
             <div class="card-head">
               <h3 id="factureNumero">—</h3>
-              <a class="link" href="factures.php">← Retour</a>
+              <div style="display:flex;gap:14px;align-items:center;">
+                <a class="link" href="facture-imprimable.php?id=<?= $idFacture ?>" target="_blank">Imprimer / PDF</a>
+                <a class="link" href="factures.php">← Retour</a>
+              </div>
             </div>
             <div class="table-wrap">
               <table class="table">

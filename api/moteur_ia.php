@@ -247,8 +247,11 @@ const MIA_AIDE = "Je peux répondre à des questions sur :\n"
     . "- **Clients** — « Coordonnées du client Kamdem »\n"
     . "- **Résumé** — « Donne-moi un résumé de l'activité du parc »";
 
-/** Point d'entrée : question en français → réponse en français. */
-function moteurRepondre(string $question): string {
+/**
+ * Point d'entrée : question en français → réponse en français.
+ * $historique : questions précédentes de la conversation (pour le suivi de contexte).
+ */
+function moteurRepondre(string $question, array $historique = []): string {
     [$intent, $score] = mia_detecter($question);
     $e = mia_entites($question);
 
@@ -256,6 +259,21 @@ function moteurRepondre(string $question): string {
     // mais porte sur l'argent → on bascule vers l'intention factures.
     if ($intent === 'clients' && preg_match('/doit|dette|montant|impay|solde|facture|paye/', mia_normaliser($question))) {
         $intent = 'factures';
+    }
+
+    // Suivi de contexte (anaphore) : « et ses contrats ? », « combien doit-il ? »
+    // → si la question fait référence à un client sans le nommer, on reprend
+    //   le dernier client mentionné dans l'historique de la conversation.
+    $qn = mia_normaliser($question);
+    if ($e['client'] === null
+        && preg_match('/\b(ses|son|sa|lui|il|elle|leur|celui|celle|ce client|meme client|encore)\b|^\s*et\s/', $qn)) {
+        foreach (array_reverse($historique) as $precedente) {
+            $ePrec = mia_entites($precedente);
+            if ($ePrec['client'] !== null) {
+                $e['client'] = $ePrec['client'];
+                break;
+            }
+        }
     }
 
     switch ($intent) {

@@ -17,18 +17,23 @@ try {
         json_out(['error' => 'Aucun message fourni'], 400);
     }
 
-    // Le moteur traite chaque question indépendamment : on prend la dernière question utilisateur.
-    $question = '';
+    // Dernière question utilisateur + historique des questions précédentes
+    // (transmis au moteur pour le suivi de contexte : « et ses contrats ? »).
+    $questions = [];
     foreach ($clientMessages as $m) {
         if (($m['role'] ?? '') === 'user') {
-            $question = trim((string) ($m['content'] ?? ''));
+            $q = trim((string) ($m['content'] ?? ''));
+            if ($q !== '') {
+                $questions[] = $q;
+            }
         }
     }
-    if ($question === '') {
+    if ($questions === []) {
         json_out(['error' => 'Le dernier message doit venir de l\'utilisateur'], 400);
     }
+    $question = array_pop($questions);
 
-    json_out(['reply' => moteurRepondre($question)]);
+    json_out(['reply' => moteurRepondre($question, $questions)]);
 } catch (Throwable $e) {
     handle_error($e);
 }

@@ -63,15 +63,17 @@ portant sur les clients, permis, contrats, engins, factures et interventions.
 - **Lecture seule** : l'assistant ne peut jamais modifier les données ; toutes les
   requêtes sont préparées (aucune injection possible) et plafonnées à 50 lignes.
 - **Sécurité** : l'endpoint `api/agent.php` exige une session authentifiée.
-- **Limites assumées** : questions hors périmètre → message d'aide ; pas de suivi
-  de contexte entre deux questions (chaque question est autonome).
+- **Suivi de contexte (anaphore)** : si une question fait référence à un client
+  sans le nommer (« et ses contrats ? », « combien doit-il ? »), le moteur reprend
+  le dernier client mentionné dans l'historique de la conversation.
+- **Limites assumées** : questions hors périmètre → message d'aide ; le contexte
+  suivi se limite à l'entité client.
 
 ## Perspectives d'évolution
 
 1. **Classifieur entraîné** (Naïve Bayes ou régression logistique sur vecteurs
    TF-IDF) à partir d'un corpus de phrases d'exemple, pour remplacer le corpus
    de mots-clés rédigé à la main.
-2. **Suivi de contexte** : mémoriser l'entité client d'une question à l'autre
-   (« et ses contrats ? »).
+2. **Contexte étendu** : suivre d'autres entités que le client (engin, période).
 3. **Nouvelles intentions** : chiffre d'affaires par période, planning des
    affectations de personnel, historique d'un engin.
