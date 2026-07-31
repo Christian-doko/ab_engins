@@ -89,11 +89,13 @@ try {
             if ($id === (int) $currentUser['id']) {
                 json_out(['error' => 'Vous ne pouvez pas désactiver votre propre compte'], 422);
             }
-            $st = $pdo->prepare('UPDATE utilisateur SET actif = NOT actif WHERE id_utilisateur = :id');
-            $st->execute(['id' => $id]);
-            if ($st->rowCount() === 0) {
-                json_out(['error' => 'Utilisateur introuvable'], 404);
+            $existe = $pdo->prepare('SELECT COUNT(*) FROM utilisateur WHERE id_utilisateur = :id');
+            $existe->execute(['id' => $id]);
+            if ((int) $existe->fetchColumn() === 0) {
+                json_out(['error' => "Utilisateur introuvable (action toggle_actif, id reçu : {$id})"], 404);
             }
+            $pdo->prepare('UPDATE utilisateur SET actif = NOT actif WHERE id_utilisateur = :id')
+                ->execute(['id' => $id]);
             json_out(['ok' => true]);
         }
 
@@ -103,11 +105,13 @@ try {
             if (strlen($mdp) < 8) {
                 json_out(['error' => 'Le mot de passe doit contenir au moins 8 caractères'], 422);
             }
-            $st = $pdo->prepare('UPDATE utilisateur SET mot_de_passe_hash = :h WHERE id_utilisateur = :id');
-            $st->execute(['h' => password_hash($mdp, PASSWORD_DEFAULT), 'id' => $id]);
-            if ($st->rowCount() === 0) {
-                json_out(['error' => 'Utilisateur introuvable'], 404);
+            $existe = $pdo->prepare('SELECT COUNT(*) FROM utilisateur WHERE id_utilisateur = :id');
+            $existe->execute(['id' => $id]);
+            if ((int) $existe->fetchColumn() === 0) {
+                json_out(['error' => "Utilisateur introuvable (action reset_password, id reçu : {$id})"], 404);
             }
+            $pdo->prepare('UPDATE utilisateur SET mot_de_passe_hash = :h WHERE id_utilisateur = :id')
+                ->execute(['h' => password_hash($mdp, PASSWORD_DEFAULT), 'id' => $id]);
             json_out(['ok' => true]);
         }
 
