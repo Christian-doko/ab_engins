@@ -37,6 +37,9 @@ if (($currentUser['role'] ?? '') === 'admin') {
     $navItems[] = ['key' => 'users', 'label' => 'Utilisateurs', 'href' => 'utilisateurs.php', 'icon' => 'users'];
 }
 
+// Profil personnel : accessible a tout membre du personnel connecte.
+$navItems[] = ['key' => 'profil', 'label' => 'Mon profil', 'href' => 'profil.php', 'icon' => 'profil'];
+
 function svg_icon(string $key): string {
     $icons = [
         'dashboard' => '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>',
@@ -48,6 +51,7 @@ function svg_icon(string $key): string {
         'assist'    => '<svg viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4l-6 6 2 2 6-6a4 4 0 0 0 5.4-5.4l-2.3 2.3-2-2z"/></svg>',
         'assistant' => '<svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/><path d="M8 12h.01M12 12h.01M16 12h.01"/></svg>',
         'users'     => '<svg viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><path d="M2 21v-2a6 6 0 0 1 6-6h2a6 6 0 0 1 6 6v2"/><circle cx="18" cy="9" r="3"/><path d="M22 21v-1a4 4 0 0 0-3-3.87"/></svg>',
+        'profil'    => '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/></svg>',
     ];
     return $icons[$key] ?? '';
 }
@@ -65,6 +69,7 @@ $roleLabel = ['admin' => 'Administrateur', 'agent' => 'Agent', 'technicien' => '
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AB ENGINS — <?= htmlspecialchars($pageTitle) ?></title>
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css" />
@@ -74,7 +79,7 @@ $roleLabel = ['admin' => 'Administrateur', 'agent' => 'Agent', 'technicien' => '
     <!-- ====================== SIDEBAR ====================== -->
     <aside class="sidebar" id="sidebar">
       <div class="brand">
-        <span class="brand-badge">AB</span>
+        <img class="brand-logo" src="assets/logo.svg" alt="AB ENGINS" />
         <span class="brand-text">
           <strong>AB ENGINS</strong>
           <small>SARL</small>
@@ -121,13 +126,13 @@ $roleLabel = ['admin' => 'Administrateur', 'agent' => 'Agent', 'technicien' => '
           <button class="icon-btn" title="Se déconnecter" id="logoutBtn">
             <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
           </button>
-          <div class="user">
+          <a class="user" href="profil.php" title="Consulter mon profil">
             <div class="user-meta">
               <strong><?= htmlspecialchars($currentUser['nom_complet']) ?></strong>
               <small><?= htmlspecialchars($roleLabel) ?></small>
             </div>
             <span class="avatar"><?= htmlspecialchars($initials) ?></span>
-          </div>
+          </a>
         </div>
       </header>
 

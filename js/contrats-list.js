@@ -26,6 +26,7 @@ function renderContratsTable(list) {
         <td>${debut} → ${fin} <small style="color:var(--muted)">(${c.duree_jours} j)</small></td>
         <td>${fmt.format(c.montant_ht)} FCFA</td>
         <td><span class="status status-${c.statut}">${CONTRAT_STATUT_LABEL[c.statut] || c.statut}</span></td>
+        <td><a class="link" href="contrat-imprimable.php?id=${c.id}" target="_blank" rel="noopener">Imprimer / PDF</a></td>
       </tr>`));
   });
 }

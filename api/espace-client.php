@@ -44,7 +44,7 @@ try {
     $contrats->execute(['id' => $idClient]);
 
     $factures = $pdo->prepare(
-        "SELECT f.numero_facture, f.date_facture, f.montant_ttc, f.statut_paiement,
+        "SELECT f.id_facture, f.numero_facture, f.date_facture, f.montant_ttc, f.statut_paiement,
                 COALESCE(pa.total_paye, 0) AS total_paye,
                 (f.montant_ttc - COALESCE(pa.total_paye, 0)) AS reste_a_payer
          FROM facture f
@@ -81,6 +81,19 @@ try {
     );
     $interventions->execute(['id' => $idClient]);
 
+    // Parc d'engins : catalogue consultable par le client, avec le marquage
+    // des engins qui lui sont actuellement affectes via un contrat actif.
+    $engins = $pdo->prepare(
+        "SELECT e.code_engin, e.type_engin, e.modele_engin, e.etat_engin, e.disponibilite,
+                MAX(CASE WHEN ct.id_client = :id AND ct.statut_contrat = 'actif' THEN 1 ELSE 0 END) AS chez_moi
+         FROM engin e
+         LEFT JOIN contrat_engin ce ON ce.id_engin = e.id_engin
+         LEFT JOIN contrat ct ON ct.id_contrat = ce.id_contrat
+         GROUP BY e.id_engin
+         ORDER BY e.type_engin, e.code_engin"
+    );
+    $engins->execute(['id' => $idClient]);
+
     json_out([
         'client' => $clientRow,
         'contrats' => $contrats->fetchAll(),
@@ -88,6 +101,7 @@ try {
         'total_du' => $totalDu,
         'permis' => $permis->fetchAll(),
         'interventions' => $interventions->fetchAll(),
+        'engins' => $engins->fetchAll(),
     ]);
 } catch (Throwable $e) {
     handle_error($e);

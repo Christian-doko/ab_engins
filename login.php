@@ -14,6 +14,7 @@ if (!empty($_SESSION['user'])) {
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AB ENGINS — Connexion</title>
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css" />
@@ -21,7 +22,7 @@ if (!empty($_SESSION['user'])) {
 </head>
 <body class="login-body">
   <div class="login-card">
-    <span class="brand-badge login-badge">AB</span>
+    <img class="login-logo" src="assets/logo.svg" alt="AB ENGINS" />
     <h1>AB ENGINS SARL</h1>
     <p class="login-sub">Plateforme de gestion des locations</p>
 

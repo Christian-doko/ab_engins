@@ -1,15 +1,18 @@
 <?php
 declare(strict_types=1);
-require __DIR__ . '/partials/guard.php';
+require __DIR__ . '/partials/guard-commun.php';
 
 /**
  * Version imprimable d'une facture : mise en page A4 autonome,
  * à imprimer ou enregistrer en PDF via le navigateur (Ctrl+P).
+ * Accessible au personnel, et au client pour ses propres factures.
  */
+
+$retour = $estClient ? 'espace-client.php' : 'factures.php';
 
 $idFacture = (int) ($_GET['id'] ?? 0);
 if ($idFacture <= 0) {
-    header('Location: factures.php');
+    header('Location: ' . $retour);
     exit;
 }
 
@@ -17,7 +20,7 @@ $pdo = db();
 
 $stmt = $pdo->prepare(
     "SELECT f.numero_facture, f.date_facture, f.montant_ht_facture, f.taux_tva, f.montant_ttc,
-            f.statut_paiement, ct.id_contrat, ct.date_effet,
+            f.statut_paiement, ct.id_contrat, ct.date_effet, ct.id_client,
             c.nom_client, c.nom_representant, c.adresse_client, c.telephone_client, c.email_client
      FROM facture f
      INNER JOIN contrat ct ON ct.id_contrat = f.id_contrat
@@ -27,8 +30,14 @@ $stmt = $pdo->prepare(
 $stmt->execute(['id' => $idFacture]);
 $f = $stmt->fetch();
 if (!$f) {
-    header('Location: factures.php');
+    header('Location: ' . $retour);
     exit;
+}
+
+// Un client ne peut imprimer que ses propres factures.
+if ($estClient && (int) $f['id_client'] !== $idClientSession) {
+    http_response_code(403);
+    exit('Accès refusé : cette facture ne vous appartient pas.');
 }
 
 $lignes = $pdo->prepare('SELECT designation_ligne, quantite, prix_unitaire, montant_ligne FROM ligne_facture WHERE id_facture = :id ORDER BY id_ligne');
@@ -60,7 +69,9 @@ $statutLabel = ['paye' => 'Payée', 'partiel' => 'Partiellement payée', 'en_ret
   body { font-family: Georgia, "Times New Roman", serif; color: #1c2620; background: #f0f2f0; }
   .page { max-width: 210mm; min-height: 260mm; margin: 24px auto; background: #fff; padding: 22mm 18mm; box-shadow: 0 4px 24px rgba(0,0,0,.12); }
   header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid var(--vert); padding-bottom: 14px; }
-  .societe h1 { font-size: 26px; color: var(--vert); letter-spacing: 1px; }
+  .societe { display: flex; gap: 12px; align-items: center; }
+  .societe img { width: 62px; height: 62px; }
+  .societe h1 { font-size: 24px; color: var(--vert); letter-spacing: 1px; }
   .societe p { font-size: 12.5px; color: #4a564e; margin-top: 4px; }
   .doc-titre { text-align: right; }
   .doc-titre h2 { font-size: 21px; color: var(--vert); }
@@ -93,14 +104,17 @@ $statutLabel = ['paye' => 'Payée', 'partiel' => 'Partiellement payée', 'en_ret
 <body>
   <div class="barre">
     <button class="primaire" onclick="window.print()">Imprimer / Enregistrer en PDF</button>
-    <a href="facture-detail.php?id=<?= $idFacture ?>">← Retour au détail</a>
+    <a href="<?= $estClient ? 'espace-client.php' : 'facture-detail.php?id=' . $idFacture ?>">← Retour</a>
   </div>
 
   <div class="page">
     <header>
       <div class="societe">
-        <h1>AB ENGINS SARL</h1>
-        <p>Location d'engins lourds — Exploitation forestière<br>Cameroun</p>
+        <img src="assets/logo.svg" alt="AB ENGINS">
+        <div>
+          <h1>AB ENGINS SARL</h1>
+          <p>Location d'engins lourds — Exploitation forestière<br>Cameroun</p>
+        </div>
       </div>
       <div class="doc-titre">
         <h2>FACTURE</h2>

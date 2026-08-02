@@ -37,6 +37,7 @@ require __DIR__ . '/partials/head.php';
                   <th>Période</th>
                   <th>Montant HT</th>
                   <th>Statut</th>
+                  <th>Document</th>
                 </tr>
               </thead>
               <tbody><!-- injecté --></tbody>

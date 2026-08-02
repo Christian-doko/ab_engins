@@ -103,3 +103,6 @@
   font-weight: 600;
 }
 .login-forgot:hover { text-decoration: underline; }
+
+/* Logo de l'application sur l'écran de connexion */
+.login-logo { width: 76px; height: 76px; display: block; margin: 0 auto 14px; }

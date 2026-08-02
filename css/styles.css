@@ -442,3 +442,41 @@ svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width:
   width: 100%; max-width: 1080px; margin: 0 auto; padding: 24px 20px 48px;
   display: flex; flex-direction: column; gap: 18px;
 }
+
+/* ============================================================
+   Logo, profil, onglets du portail client
+   ============================================================ */
+.brand-logo { width: 40px; height: 40px; flex: 0 0 40px; }
+a.user { text-decoration: none; color: inherit; border-radius: 10px; padding: 4px 6px; transition: background .15s; }
+a.user:hover { background: var(--green-050); }
+
+/* Listes de type fiche (profil) */
+.profil-list { display: flex; flex-direction: column; gap: 2px; }
+.profil-list > div { display: flex; justify-content: space-between; gap: 16px; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 13.5px; }
+.profil-list > div:last-child { border-bottom: 0; }
+.profil-list dt { color: var(--muted); font-weight: 500; }
+.profil-list dd { font-weight: 600; text-align: right; color: var(--ink); }
+
+.form-success { background: var(--green-050); color: var(--green-700); font-size: 12.5px; font-weight: 600; padding: 9px 12px; border-radius: 8px; margin-top: 14px; }
+
+/* Onglets de l'espace client */
+.portail-tabs {
+  display: flex; gap: 4px; flex-wrap: wrap;
+  background: var(--card); border-bottom: 1px solid var(--line);
+  padding: 0 28px;
+}
+.portail-tabs .tab {
+  border: 0; background: none; font: inherit; font-size: 13.5px; font-weight: 600;
+  color: var(--muted); padding: 13px 16px; cursor: pointer;
+  border-bottom: 3px solid transparent; transition: color .15s, border-color .15s;
+}
+.portail-tabs .tab:hover { color: var(--ink); }
+.portail-tabs .tab.active { color: var(--green-700); border-bottom-color: var(--green-600); }
+.tab-panel { display: flex; flex-direction: column; gap: 18px; }
+
+@media (max-width: 720px) {
+  .portail-topbar, .portail-tabs { padding-left: 14px; padding-right: 14px; }
+  .portail-tabs { overflow-x: auto; flex-wrap: nowrap; }
+  .profil-list > div { flex-direction: column; gap: 2px; }
+  .profil-list dd { text-align: left; }
+}

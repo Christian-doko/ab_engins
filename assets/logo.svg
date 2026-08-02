@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="AB ENGINS">
+  <title>AB ENGINS</title>
+  <!-- Hexagone jaune -->
+  <polygon points="50,8 150,8 192,100 150,192 50,192 8,100"
+           fill="#F2E30D" stroke="#0f4023" stroke-width="3" stroke-linejoin="round"/>
+
+  <!-- Chargeuse sur chenilles -->
+  <g fill="#ffffff" stroke="#16211b" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round">
+    <!-- Godet -->
+    <path d="M36 108 L36 78 L52 78 L52 104 Z"/>
+    <!-- Bras -->
+    <path d="M52 84 L86 74"/>
+    <!-- Cabine -->
+    <path d="M86 58 L134 58 L140 88 L86 88 Z"/>
+    <!-- Vitres -->
+    <path d="M94 66 L112 66 L112 82 L94 82 Z" fill="#dfe9e2"/>
+    <path d="M118 66 L130 66 L134 82 L118 82 Z" fill="#dfe9e2"/>
+    <!-- Chassis -->
+    <path d="M60 88 L146 88 L146 112 L60 112 Z"/>
+    <!-- Chenille -->
+    <path d="M54 116 L152 116 L160 140 L46 140 Z"/>
+  </g>
+  <g fill="#16211b">
+    <circle cx="70" cy="128" r="7"/>
+    <circle cx="103" cy="128" r="7"/>
+    <circle cx="136" cy="128" r="7"/>
+  </g>
+
+  <!-- Bandeau vert -->
+  <rect x="28" y="150" width="144" height="30" rx="4" fill="#1f7a3d" stroke="#0f4023" stroke-width="2.5"/>
+  <text x="100" y="171" text-anchor="middle"
+        font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800"
+        letter-spacing="1.5" fill="#ffffff">AB ENGINS</text>
+</svg>
