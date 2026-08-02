@@ -68,10 +68,19 @@ function onClientChange() {
     ? `<span class="status status-${statut}">${STATUT_LABEL[statut] || statut}</span>`
     : "—";
   summary.hidden = false;
-  $("#toStep2").disabled = statut === 'expire' || statut === 'suspendu';
-  if ($("#toStep2").disabled) {
-    showError("Ce client n'a pas de permis valide : impossible de créer un contrat.");
+
+  // Regle de gestion : le client doit presenter un permis valide.
+  if (!client.id_permis) {
+    $("#toStep2").disabled = true;
+    showError("Ce client n'a aucun permis d'exploitation enregistré : il doit en présenter un avant d'obtenir un contrat.");
+  } else if (statut === "expire") {
+    $("#toStep2").disabled = true;
+    showError(`Le permis ${client.permis} est expiré : enregistrez son renouvellement avant de créer un contrat.`);
+  } else if (statut === "suspendu") {
+    $("#toStep2").disabled = true;
+    showError(`Le permis ${client.permis} est suspendu : aucun contrat ne peut être établi.`);
   } else {
+    $("#toStep2").disabled = false;
     clearError();
   }
 }
@@ -178,6 +187,8 @@ async function submitContrat() {
 
   const payload = {
     id_client: state.client.id,
+    // Permis presente par le client : obligatoire pour obtenir un contrat.
+    id_permis: state.client.id_permis,
     date_effet: state.dateEffet,
     duree_jours: state.dureeJours,
     montant_ht: state.montantHt,

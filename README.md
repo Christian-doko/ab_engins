@@ -15,6 +15,10 @@ Application web de gestion de location d'engins de chantier : clients, contrats,
    - `sql/script_ab_engins.sql` (schéma)
    - `sql/auth_utilisateur.sql` (comptes)
    - `sql/seed_ab_engins.sql` puis `sql/seed_extra_contracts.sql` (données de démo)
+
+   > Base déjà installée avant la règle « permis obligatoire » ? Elle est migrée
+   > automatiquement à la première ouverture de la page Contrats
+   > (`sql/migration_permis_obligatoire.sql` pour l'appliquer à la main).
 3. Ouvrir `http://localhost/AB%20ENGINS/login.php`.
 
 ## Assistant IA (moteur NLU maison)

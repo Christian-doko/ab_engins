@@ -21,7 +21,12 @@ INSERT INTO permis (numero_permis, region, departement, arrondissement, foret_co
  ('PM-2025-046', 'Sud',       'Dja-et-Lobo',  'Sangmélima', 'Zone minière Sud',   340.00,  '2025-08-15', '2026-08-15', 'valide',  2),
  ('PA-2023-201', 'Ouest',     'Mifi',         'Bafoussam',  'Périmètre Agro-1',   85.00,   '2023-08-28', '2025-01-10', 'expire',  3),
  ('PL-2026-012', 'Littoral',  'Wouri',        'Douala 5e',  'Lotissement Nord',   12.00,   '2026-01-05', '2027-06-12', 'valide',  4),
- ('PT-2025-089', 'Centre',    'Mfoundi',      'Yaoundé 3e', 'Voirie Mvan',        6.50,    '2025-03-01', '2026-09-01', 'suspendu',5);
+ -- Delivre valide : la suspension administrative n'intervient qu'apres la
+ -- signature des contrats de ce client (voir fin de seed_extra_contracts.sql).
+ ('PT-2025-089', 'Centre',    'Mfoundi',      'Yaoundé 3e', 'Voirie Mvan',        6.50,    '2025-03-01', '2026-09-01', 'valide',  5),
+ -- Renouvellement du permis d'AGRO-PLUS : l'ancien (PA-2023-201) reste expire
+ -- dans l'historique, celui-ci couvre les contrats signes depuis 2025.
+ ('PA-2025-114', 'Ouest',     'Mifi',         'Bafoussam',  'Périmètre Agro-1',   85.00,   '2025-01-11', '2027-01-10', 'valide',  3);
 
 -- 4. Engins
 INSERT INTO engin (code_engin, type_engin, modele_engin, numero_serie, etat_engin, disponibilite) VALUES
@@ -43,7 +48,7 @@ INSERT INTO employe (nom_employe, prenom_employe, poste, telephone_employe) VALU
 INSERT INTO contrat (date_signature, lieu_signature, date_effet, duree_jours, tacite_reconduction, statut_contrat, montant_ht, id_client, id_permis) VALUES
  ('2026-07-10', 'Douala',  '2026-07-15', 45, FALSE, 'actif',   3600000.00, 1, 1),
  ('2026-07-05', 'Yaoundé', '2026-07-10', 30, FALSE, 'actif',   2100000.00, 2, 2),
- ('2026-06-28', 'Bafoussam','2026-07-02', 20, FALSE, 'termine', 950000.00, 3, 3),
+ ('2026-06-28', 'Bafoussam','2026-07-02', 20, FALSE, 'termine', 950000.00, 3, 6),
  ('2026-06-20', 'Douala',  '2026-06-28', 15, FALSE, 'resilie', 600000.00, 4, 4);
 
 -- 7. Contrat_engin

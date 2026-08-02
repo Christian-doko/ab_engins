@@ -14,7 +14,7 @@ try {
 
         $sql = "SELECT c.id_client, c.nom_client, c.nom_representant, c.telephone_client,
                        c.email_client, c.adresse_client, s.libelle_secteur AS secteur,
-                       perm.numero_permis, perm.date_expiration,
+                       perm.id_permis, perm.numero_permis, perm.date_expiration,
                        {$statutExpr} AS statut_permis
                 FROM client c
                 INNER JOIN secteur_activite s ON s.id_secteur = c.id_secteur
@@ -41,7 +41,9 @@ try {
                 'email' => $c['email_client'],
                 'adresse' => $c['adresse_client'],
                 'secteur' => $c['secteur'],
+                'id_permis' => isset($c['id_permis']) ? (int) $c['id_permis'] : null,
                 'permis' => $c['numero_permis'],
+                'date_expiration_permis' => $c['date_expiration'] ?? null,
                 'statut_permis' => $c['statut_permis'] ?? null,
             ];
         }, $stmt->fetchAll());

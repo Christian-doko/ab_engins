@@ -26,7 +26,7 @@ flowchart TB
 
     subgraph BDD["MySQL"]
         TABLES["14 tables métier<br/>(client, contrat, engin, permis,<br/>facture, paiement, assistance...)"]
-        TRIGGER["Trigger : interdit d'affecter un engin<br/>à 2 contrats actifs qui se chevauchent"]
+        TRIGGER["Triggers de règles métier :<br/>• un engin ne peut pas être sur 2 contrats<br/>actifs qui se chevauchent<br/>• pas de contrat sans permis valide<br/>appartenant au client signataire"]
         USERS["Table utilisateur<br/>(mots de passe hashés bcrypt)"]
     end
 
@@ -76,8 +76,15 @@ flowchart LR
 
 - **Séparation en 3 tiers** : présentation (navigateur), traitement (PHP), données
   (MySQL) — chaque échange client↔serveur passe par le contrôle de session.
-- **Règles de gestion en base** : le trigger de non-chevauchement garantit
-  l'intégrité même si une future interface contournait l'application.
+- **Règles de gestion en base** : les triggers garantissent l'intégrité même si
+  une future interface contournait l'application. Deux règles sont implémentées
+  au niveau du SGBD :
+  1. un engin ne peut pas être affecté à deux contrats actifs sur des périodes
+     qui se chevauchent ;
+  2. **un contrat exige un permis d'exploitation** — `contrat.id_permis` est
+     `NOT NULL`, et le permis présenté doit appartenir au client signataire,
+     couvrir la date de signature et ne pas être suspendu
+     (voir `sql/migration_permis_obligatoire.sql`).
 - **Assistant IA autonome** : aucun service externe — tout le pipeline s'exécute
   dans le tiers traitement, les données ne quittent jamais le système.
 - **Déploiement continu** : un `git push` suffit pour mettre la production à jour ;

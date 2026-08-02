@@ -72,13 +72,16 @@ CREATE TABLE contrat (
   statut_contrat      ENUM('actif','termine','resilie','renouvele') NOT NULL DEFAULT 'actif',
   montant_ht          DECIMAL(12,2) NOT NULL,
   id_client           INT NOT NULL,
-  id_permis           INT NULL,
+  -- Regle de gestion : le client doit presenter un permis d'exploitation
+  -- pour obtenir un contrat. Le permis est donc obligatoire, et le contrat
+  -- ne peut pas exister sans lui (RESTRICT plutot que SET NULL).
+  id_permis           INT NOT NULL,
   CONSTRAINT fk_contrat_client
     FOREIGN KEY (id_client) REFERENCES client(id_client)
     ON UPDATE CASCADE ON DELETE RESTRICT,
   CONSTRAINT fk_contrat_permis
     FOREIGN KEY (id_permis) REFERENCES permis(id_permis)
-    ON UPDATE CASCADE ON DELETE SET NULL,
+    ON UPDATE CASCADE ON DELETE RESTRICT,
   CONSTRAINT chk_contrat_duree CHECK (duree_jours > 0)
 ) ENGINE=InnoDB;
 
@@ -296,6 +299,66 @@ BEGIN
   IF nb_conflits > 0 THEN
     SIGNAL SQLSTATE '45000'
     SET MESSAGE_TEXT = 'Conflit : cet engin est deja affecte a un contrat actif sur cette periode.';
+  END IF;
+END$$
+
+-- ============================================================================
+-- REGLE DE GESTION : le client doit presenter un permis d'exploitation valide
+-- pour obtenir un contrat. Le permis rattache au contrat doit donc :
+--   1. appartenir au client signataire ;
+--   2. couvrir la date de signature (delivre avant, expire apres) ;
+--   3. ne pas etre suspendu.
+-- Procedure partagee par les triggers INSERT et UPDATE de contrat.
+-- ============================================================================
+CREATE PROCEDURE valider_permis_contrat(
+  IN p_id_permis INT, IN p_id_client INT, IN p_date_signature DATE
+)
+BEGIN
+  DECLARE v_id_client_permis INT;
+  DECLARE v_delivrance DATE;
+  DECLARE v_expiration DATE;
+  DECLARE v_statut VARCHAR(20);
+
+  SELECT id_client, date_delivrance, date_expiration, statut_permis
+    INTO v_id_client_permis, v_delivrance, v_expiration, v_statut
+  FROM permis WHERE id_permis = p_id_permis;
+
+  IF v_id_client_permis IS NULL THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'Permis introuvable : un contrat exige un permis existant.';
+  END IF;
+
+  IF v_id_client_permis <> p_id_client THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'Le permis presente appartient a un autre client.';
+  END IF;
+
+  IF p_date_signature < v_delivrance OR p_date_signature > v_expiration THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'Le permis presente n est pas valide a la date de signature du contrat.';
+  END IF;
+
+  IF v_statut = 'suspendu' THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'Le permis presente est suspendu : aucun contrat ne peut etre etabli.';
+  END IF;
+END$$
+
+CREATE TRIGGER trg_check_permis_contrat_insert
+BEFORE INSERT ON contrat
+FOR EACH ROW
+BEGIN
+  CALL valider_permis_contrat(NEW.id_permis, NEW.id_client, NEW.date_signature);
+END$$
+
+CREATE TRIGGER trg_check_permis_contrat_update
+BEFORE UPDATE ON contrat
+FOR EACH ROW
+BEGIN
+  IF NEW.id_permis <> OLD.id_permis
+     OR NEW.id_client <> OLD.id_client
+     OR NEW.date_signature <> OLD.date_signature THEN
+    CALL valider_permis_contrat(NEW.id_permis, NEW.id_client, NEW.date_signature);
   END IF;
 END$$
 

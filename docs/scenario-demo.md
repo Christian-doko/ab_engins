@@ -32,9 +32,12 @@ en chronométrant. Ne jamais improviser une action non répétée pendant la sou
 ### 1:00 — Parcours métier (1 min 30)
 
 4. **Clients** : ouvrir la liste, montrer la recherche.
-5. **Contrats** : montrer un contrat et sa période ; mentionner le **trigger SQL**
-   qui interdit d'affecter un même engin à deux contrats actifs qui se chevauchent
-   (règle de gestion implémentée en base, pas seulement dans l'interface).
+5. **Contrats** : montrer un contrat et sa période ; mentionner les **triggers SQL**
+   qui implémentent les règles de gestion en base, pas seulement dans l'interface :
+   un engin ne peut pas être sur deux contrats actifs qui se chevauchent, et
+   **aucun contrat ne peut être créé sans permis d'exploitation valide**.
+   *Démonstration forte* : lancer « Nouveau contrat », choisir **BTP Horizon**
+   (permis suspendu) → le wizard bloque immédiatement avec un message explicite.
 6. **Factures** : ouvrir une facture partiellement payée, montrer l'historique des
    paiements et le recalcul automatique du statut (payé / partiel / en retard).
 7. Cliquer **Imprimer / PDF** : montrer la facture A4 générée, revenir.
@@ -97,6 +100,13 @@ Périmètre fermé de 8 intentions (comme les chatbots industriels à intentions
 Rasa/Dialogflow) ; le suivi de contexte se limite à l'entité client ; pas de
 reformulation libre. Évolutions prévues : classifieur entraîné (Naïve Bayes sur
 TF-IDF), contexte étendu, nouvelles intentions.
+
+**« Comment garantissez-vous les règles métier ? »**
+Elles sont implémentées **dans la base**, pas seulement dans l'interface : le permis
+est obligatoire (`NOT NULL` + clé étrangère `RESTRICT`), et un trigger vérifie à
+chaque insertion que le permis appartient au client, couvre la date de signature et
+n'est pas suspendu. Même un accès direct à MySQL ne peut pas créer un contrat
+irrégulier. L'application double ce contrôle pour afficher un message clair.
 
 **« Et la sécurité de l'application en général ? »**
 Mots de passe hashés (`password_hash`/bcrypt), sessions régénérées à la connexion,

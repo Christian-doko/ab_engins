@@ -1,12 +1,15 @@
 <?php
 declare(strict_types=1);
 require __DIR__ . '/config.php';
+require __DIR__ . '/migrations.php';
 requireStaff();
 
 $method = $_SERVER['REQUEST_METHOD'];
 
 try {
     $pdo = db();
+    // Regle de gestion : pas de contrat sans permis (cf. sql/migration_permis_obligatoire.sql).
+    ensurePermisObligatoire($pdo);
 
     if ($method === 'GET') {
         $stmt = $pdo->query(
@@ -40,7 +43,7 @@ try {
         $body = json_decode(file_get_contents('php://input'), true) ?? [];
 
         $idClient = (int) ($body['id_client'] ?? 0);
-        $idPermis = !empty($body['id_permis']) ? (int) $body['id_permis'] : null;
+        $idPermis = !empty($body['id_permis']) ? (int) $body['id_permis'] : 0;
         $dateEffet = (string) ($body['date_effet'] ?? '');
         $dureeJours = (int) ($body['duree_jours'] ?? 0);
         $dateSignature = (string) ($body['date_signature'] ?? date('Y-m-d'));
@@ -51,6 +54,32 @@ try {
 
         if ($idClient <= 0 || $dateEffet === '' || $dureeJours <= 0 || $montantHt <= 0 || empty($enginIds)) {
             json_out(['error' => 'Client, date d\'effet, durée, montant et au moins un engin sont obligatoires'], 422);
+        }
+
+        // Le client doit presenter un permis d'exploitation : on verifie ici pour
+        // renvoyer un message clair (la base refuserait de toute facon via le trigger).
+        if ($idPermis <= 0) {
+            json_out(['error' => 'Le client doit présenter un permis d\'exploitation pour obtenir un contrat'], 422);
+        }
+        $stmtPermis = $pdo->prepare(
+            'SELECT numero_permis, id_client, date_delivrance, date_expiration, statut_permis
+             FROM permis WHERE id_permis = :id'
+        );
+        $stmtPermis->execute(['id' => $idPermis]);
+        $permis = $stmtPermis->fetch();
+
+        if (!$permis) {
+            json_out(['error' => 'Permis introuvable'], 422);
+        }
+        if ((int) $permis['id_client'] !== $idClient) {
+            json_out(['error' => 'Le permis sélectionné appartient à un autre client'], 422);
+        }
+        if ($permis['statut_permis'] === 'suspendu') {
+            json_out(['error' => "Le permis {$permis['numero_permis']} est suspendu : aucun contrat ne peut être établi"], 422);
+        }
+        if ($dateSignature < $permis['date_delivrance'] || $dateSignature > $permis['date_expiration']) {
+            $exp = (new DateTime($permis['date_expiration']))->format('d/m/Y');
+            json_out(['error' => "Le permis {$permis['numero_permis']} n'est pas valide à la date de signature (expire le {$exp}). Enregistrez son renouvellement avant de créer le contrat."], 422);
         }
 
         $pdo->beginTransaction();
@@ -85,9 +114,13 @@ try {
             $pdo->commit();
         } catch (Throwable $e) {
             $pdo->rollBack();
-            // Le trigger trg_check_chevauchement_engin remonte un SIGNAL SQLSTATE 45000
-            // quand un engin est deja affecte a un contrat actif sur la periode demandee.
+            // Les triggers metier remontent un SIGNAL SQLSTATE 45000 :
+            // non-chevauchement des engins, et validite du permis presente.
             if ($e instanceof PDOException && $e->getCode() === '45000') {
+                $message = (string) ($e->errorInfo[2] ?? '');
+                if (stripos($message, 'permis') !== false) {
+                    json_out(['error' => 'Permis refusé par la base : ' . $message], 422);
+                }
                 json_out(['error' => 'Un ou plusieurs engins sélectionnés sont déjà loués sur cette période'], 409);
             }
             throw $e;
